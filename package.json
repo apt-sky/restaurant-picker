@@ -1,0 +1,10 @@
+{
+  "name": "restaurant-picker",
+  "description": "Restaurant Randomizer for Lunch",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "~4.12.3",
+    "mongodb": "~2.0.28"
+  }
+}

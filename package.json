@@ -7,5 +7,6 @@
     "express": "~4.12.3",
     "mongodb": "~2.0.28",
     "body-parser": "~1.12.3"
-  }
+  },
+  "start": "node server.js"
 }

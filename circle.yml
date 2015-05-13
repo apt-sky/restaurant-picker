@@ -7,9 +7,9 @@ dependencies:
   override:
     - docker build -t aakashthakkar/restaurant-picker:latest .
 general:
-	branches:
-		ignore:
-			- master #ignore tests on the master branch
+  branches:
+    ignore:
+      - master
 deployment:
   hub:
     branch: master

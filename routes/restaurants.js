@@ -1,11 +1,17 @@
 var mongoClient = require('mongodb').MongoClient;
+var config = require('./config.js');
 
-var url = 'mongodb://localhost:27017/restaurant-picker';
+if (process.env.NODE_ENV === 'aws') {
+    var url = config.mongo.aws_url;
+} else {
+    var url = config.mongo.local_url;
+}
+
 
 var mongodb;
 mongoClient.connect(url, function (err, db) {
     if (!err) {
-        console.log("Connected successfully to the restaurant-picker db");
+        console.log("Connected successfully to the restaurant-picker db on the following url " + url);
         mongodb = db;
     }
 });

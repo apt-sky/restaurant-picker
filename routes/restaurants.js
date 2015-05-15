@@ -11,8 +11,10 @@ if (process.env.NODE_ENV === 'aws') {
 var mongodb;
 mongoClient.connect(url, function (err, db) {
     if (!err) {
-        console.log("Connected successfully to the restaurant-picker db on the following url " + url);
+        console.log("Connected successfully to the restaurant-picker db on " + url);
         mongodb = db;
+    } else {
+        console.log("Error connecting to the restaurant-picker db on " + url)
     }
 });
 
@@ -28,7 +30,7 @@ exports.createRestaurant = function (req, res) {
         collection.insert(restaurant, {safe: true}, function (err, result) {
             if (err) {
                 console.log("Error posting data");
-                res.send({Error: "Error adding an data to the restaurants collection"});
+                res.status(500).send({Error: "Error adding an data to the restaurants collection"});
             } else {
                 console.log("Success posting data");
                 res.send(result[0]);
@@ -77,7 +79,7 @@ exports.deleteById = function (req, res) {
     mongodb.collection('restaurants', function (err, collection) {
         collection.remove({_id:id}, function(err, result){
             if (err) {
-                res.send({'error':'An error has occurred - ' + err});
+                res.status(500).send({'error':'An error has occurred - ' + err});
             } else {
                 console.log('' + result + ' document(s) deleted');
                 res.send(req.body);

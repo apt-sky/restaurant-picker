@@ -23,6 +23,31 @@ exports.getRoot = function (req, res) {
     res.send("Welcome to the Restaurant Picker");
 };
 
+exports.getHealth = function(req, res) {
+
+    var health = {
+        service: "OK",
+        mongodb: "OK"
+    };
+
+    if(mongodb) {
+        health.mongodb = "OK";
+    } else {
+        health.mongodb = "DOWN";
+    }
+
+    res.send(health);
+}
+
+exports.getAllRestaurants = function (req, res) {
+    console.log("Getting all Restaurants");
+    mongodb.collection('restaurants', function (err, collection) {
+        collection.find({}).toArray(function (err, items) {
+            res.send(items);
+        });
+    });
+};
+
 exports.createRestaurant = function (req, res) {
     var restaurant = req.body;
     console.log('Adding a Restaurant: ' + JSON.stringify(restaurant));
@@ -40,40 +65,42 @@ exports.createRestaurant = function (req, res) {
 
 };
 
-exports.getAll = function (req, res) {
-    console.log("Getting all Restaurants");
-    mongodb.collection('restaurants', function (err, collection) {
-        collection.find({}).toArray(function (err, items) {
-            res.send(items);
-        });
-    });
-};
-
-exports.getById = function (req, res) {
+exports.getRestaurantById = function (req, res) {
     var id = req.params.id;
     console.log("Getting Restaurant by id : " + id);
     mongodb.collection('restaurants', function (err, collection) {
 
-        if (id === 'random') {
-            console.log("Generating random id for getting restaurant");
-            collection.stats(function(err, stats){
-                var random = Math.random() * (stats.count - 0) + 0;
-                console.log("Random number generated : " + random);
-                collection.find().limit(-1).skip(random).next(function(err, item){
-                    console.log("Returning restaurant : " + item.name);
-                    res.send(item);
-                })
-            });
+        if(err) {
+            console.log("Error getting collection in GET by ID method");
+            res.status(500).send({'error':'Error occured getting collection - ' + err});
         } else {
-            collection.findOne({_id:id}).toArray(function (err, item) {
-                console.log("Returning restaurant : " + item.name);
-                res.send(item);
-            });
+            if (id === 'random') {
+                console.log("Generating random id for getting restaurant");
+                collection.stats(function(err, stats){
+                    var random = Math.random() * (stats.count - 0) + 0;
+                    console.log("Random number generated : " + random);
+                    collection.find().limit(-1).skip(random).next(function(err, item){
+                        console.log("Returning restaurant : " + item.name);
+                        res.send(item);
+                    })
+                });
+            } else {
+                collection.find({"_id":id}).toArray(function (err, item) {
+                    if (!err) {
+                        console.log("Returning restaurant : " + item.name);
+                        res.send(item);
+                    }
+                    else {
+                        console.log("Error returning restaurant by id : " + err);
+                        res.status(500).send({'error':'An error has occured - ' + err});
+                    }
+                });
+            }
         }
     });
 };
 
-exports.deleteById = function (req, res) {
+exports.deleteRestaurantById = function (req, res) {
     var id = req.params.id;
     console.log("Deleting Restaurant by id : " + id);
     mongodb.collection('restaurants', function (err, collection) {

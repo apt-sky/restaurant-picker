@@ -55,7 +55,7 @@ exports.createRestaurant = function (req, res) {
         collection.insert(restaurant, {safe: true}, function (err, result) {
             if (err) {
                 console.log("Error posting data");
-                res.status(500).send({Error: "Error adding an data to the restaurants collection"});
+                res.status(500).send({'error': 'Error adding an data to the restaurants collection - '+ err});
             } else {
                 console.log("Success posting data");
                 res.send(result[0]);
@@ -72,7 +72,7 @@ exports.getRestaurantById = function (req, res) {
 
         if(err) {
             console.log("Error getting collection in GET by ID method");
-            res.status(500).send({'error':'Error occured getting collection - ' + err});
+            res.status(500).send({'error':'Error getting collection by id - ' + err});
         } else {
             if (id === 'random') {
                 console.log("Generating random id for getting restaurant");
@@ -92,7 +92,7 @@ exports.getRestaurantById = function (req, res) {
                     }
                     else {
                         console.log("Error returning restaurant by id : " + err);
-                        res.status(500).send({'error':'An error has occured - ' + err});
+                        res.status(500).send({'error':'Error while finding restaurant by id - ' + err});
                     }
                 });
             }
@@ -106,10 +106,10 @@ exports.deleteRestaurantById = function (req, res) {
     mongodb.collection('restaurants', function (err, collection) {
         collection.remove({_id:id}, function(err, result){
             if (err) {
-                res.status(500).send({'error':'An error has occurred - ' + err});
+                res.status(500).send({'error':'Error while deleting restaurant - ' + err});
             } else {
                 console.log('' + result + ' document(s) deleted');
-                res.send(req.body);
+                res.send(result);
             }
         })
     });
